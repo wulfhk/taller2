@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Live Stream with Aggression Detection{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+    body {
+        background-color: #121212;
+        color: #ffffff;
+    }
+    .sidebar {
+        height: 100vh;
+        background-color: #1e1e1e;
+        padding-top: 20px;
+    }
+    .sidebar-sticky {
+        position: sticky;
+        top: 20px;
+    }
+    .main-content {
+        padding: 20px;
+    }
+    #video-stream {
+        width: 100%;
+        max-width: 640px;
+        height: auto;
+        border: 1px solid #333;
+        box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    .alert {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4 main-content">
+            <h1 class="mt-2">Live Stream with Aggression Detection</h1>
+            <div class="alert alert-danger mt-3" role="alert" id="aggressionAlert">
+                <strong>Warning!</strong> Aggression detected!
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12 text-center">
+                    <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Live Stream">
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script>
+    function checkAggression() {
+        fetch('/check_aggression')
+            .then(response => response.json())
+            .then(data => {
+                if (data.aggression) {
+                    document.getElementById('aggressionAlert').style.display = 'block';
+                } else {
+                    document.getElementById('aggressionAlert').style.display = 'none';
+                }
+            });
+    }
+
+    // Verificar la agresión cada segundo
+    setInterval(checkAggression, 1000);
+</script>
+{% endblock %}
